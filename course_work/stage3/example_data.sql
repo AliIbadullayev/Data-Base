@@ -45,7 +45,8 @@ INSERT INTO crypto (name, exchange_rate)
 VALUES ('Bitcoin', 31286.7),
        ('LiteCoin', 280.9),
        ('Ethereum', 12034.75),
-       ('ShibaCoin', 0.000009927);
+       ('ShibaCoin', 0.000009927),
+       ('DentCoin', 0.58);
 
 INSERT INTO blockchain_network(name, fee, lead_time)
 VALUES ('Bn_1', 0.8, 50),
@@ -66,7 +67,7 @@ VALUES
 
 
 -- TODO trigger on amount must decrease amount of crypto in wallet
-INSERT INTO stacking(wallet, interest_rate, amount, data)
+INSERT INTO stacking(wallet, interest_rate, amount, expire_date)
 VALUES ('6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 10, 5.283, current_timestamp - interval '7 days');
 
 
@@ -77,6 +78,7 @@ INSERT INTO transaction(wallet1, wallet2, amount, blockchain, time)
 VALUES
 --        ('d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', '4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a', 3.2, 'Bn_2', current_timestamp - interval '3 days'),
        ('4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a', 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', 0.5, 'German_Bn_1', current_timestamp - interval '1 day');
+
 
 INSERT INTO crypto_exchange(wallet1, wallet2, amount)
 VALUES
@@ -90,4 +92,5 @@ VALUES
 -- first person want to sale 3 bitcoin for third person for 100000$
         ('agent_smith', 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', '4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a', 'Bitcoin', 3, 100000, 'waiting', 'buy', current_timestamp - interval '1 day');
 
-UPDATE p2p_transaction SET status = 'approved' where p2p_transaction.id = 1;
+UPDATE p2p_transaction SET status = 'approved' where p2p_transaction.id = 30;
+update client set fiat_balance  = fiat_balance + 10000 where user_login ='susaasus1';

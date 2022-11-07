@@ -28,30 +28,21 @@ EXECUTE FUNCTION exchange_crypto();
 --     FOR EACH ROW
 -- EXECUTE FUNCTION delete_bank_card();
 
-CREATE TRIGGER check_status
-    BEFORE INSERT
-           ON p2p_transaction
-               FOR EACH ROW
-EXECUTE FUNCTION check_p2p_status();
-
-
--- TODO кошелек в р2р не должен принадлежать тому же клиенту
-CREATE TRIGGER check_belong
-    BEFORE INSERT
-           ON p2p_transaction
-               FOR EACH ROW
-EXECUTE FUNCTION check_p2p_belong();
-
-
-CREATE TRIGGER make_transaction
+CREATE TRIGGER make_p2p_transaction_after_status_change
     AFTER UPDATE OF status
           ON p2p_transaction
               FOR EACH ROW
 EXECUTE FUNCTION make_p2p_transaction();
 
+CREATE TRIGGER make_p2p_transaction
+    BEFORE INSERT
+        ON p2p_transaction
+            FOR EACH ROW
+EXECUTE FUNCTION make_p2p_transaction();
+
 
 CREATE TRIGGER card_expired
-    AFTER UPDATE OF fiat_balance
+    BEFORE UPDATE OF fiat_balance
           ON client
               FOR EACH ROW
 EXECUTE FUNCTION delete_bank_card();

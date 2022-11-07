@@ -32,3 +32,10 @@ drop function if exists check_balance_before_transaction() ;
 DROP FUNCTION get_wallet_balance(character varying);
 drop trigger if exists exchange on crypto_exchange cascade ;
 drop function if exists get_exchange_rate(addr varchar);
+
+drop trigger if exists make_transaction on p2p_transaction cascade ;
+DROP FUNCTION make_p2p_transaction();
+
+drop trigger if exists check_status on p2p_transaction cascade ;
+
+

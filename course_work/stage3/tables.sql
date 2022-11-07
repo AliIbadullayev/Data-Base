@@ -76,7 +76,7 @@ create table stacking
     primary key (wallet),
     interest_rate REAL      not null,
     amount        REAL      not null,
-    data          TIMESTAMP not null
+    expire_date          TIMESTAMP not null
 );
 
 create table nft_likes
@@ -94,7 +94,8 @@ create table transaction
     wallet2            varchar(255)    not null references wallet (address),
     amount                REAL      not null,
     blockchain varchar(255)    not null references blockchain_network (name),
-    time                  TIMESTAMP not null
+    time                  TIMESTAMP not null,
+    unique (wallet1, wallet2, time)
 );
 
 create table p2p_transaction
@@ -108,5 +109,6 @@ create table p2p_transaction
     fiat_amount    REAL                   not null,
     operation_type optype_enum            not null,
     status         p2p_transaction_status not null,
-    time           TIMESTAMP              not null
+    time           TIMESTAMP              not null,
+    unique (wallet1, wallet2, time)
 );

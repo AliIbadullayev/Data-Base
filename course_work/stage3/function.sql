@@ -319,18 +319,19 @@ begin
 end;
 $$ language plpgsql;
 
--- create or replace function delete_bank_card() returns trigger
--- as
--- $$
--- declare
---     expir date := new.expire_date;
--- begin
---     IF (expire_date > current_date)
---     then
---         DELETE FROM bank_card where bank_card.card_number = new.bank_card;
---         RAISE NOTICE 'Срок действия карты % истёк. Она удалена из ваших карт',new.card_number;
---         new.status = 'waiting';
---     end if;
---     return new;
--- end;
--- $$ language plpgsql;
+-- Перед пополнением проверяем время истекания карты, если истекла - удаляем
+create or replace function delete_bank_card() returns trigger
+as
+$$
+declare
+    expire_date date := (select expire_date from bank_card where bank_card.client = new.user_login);
+    card varchar := (select card_number from bank_card where bank_card.client = new.user_login);
+begin
+    IF (expire_date < current_date)
+    then
+        DELETE FROM bank_card where bank_card.card_number = card;
+        RAISE EXCEPTION 'Срок действия карты % истёк. Она удалена из ваших карт', card;
+    end if;
+    return new;
+end;
+$$ language plpgsql;
