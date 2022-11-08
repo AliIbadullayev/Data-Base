@@ -27,7 +27,7 @@ BEGIN
 
 END; $$ LANGUAGE plpgsql;
 
-
+-- Достается баланс крипто-кошелька
 CREATE OR REPLACE FUNCTION get_wallet_balance(addr varchar(255)) RETURNS real
 AS
 $$
@@ -44,7 +44,7 @@ BEGIN
 
 END; $$ LANGUAGE plpgsql;
 
-
+-- Достается баланс лицевого счета
 CREATE OR REPLACE FUNCTION get_fiat_balance(addr varchar(255)) RETURNS real
 AS
 $$
@@ -61,7 +61,7 @@ BEGIN
 
 END; $$ LANGUAGE plpgsql;
 
-
+-- Проверяется имеется ли на крипто-кошельке введенная сумма (balance)
 CREATE OR REPLACE FUNCTION check_balance_wallet(balance float, addr varchar(255)) RETURNS BOOLEAN
 AS
 $$
@@ -70,7 +70,7 @@ BEGIN
 
 END; $$ LANGUAGE plpgsql;
 
-
+-- Проверяется имеется ли на лицевом счете введенная сумма (balance)
 CREATE OR REPLACE FUNCTION check_balance_fiat(balance float, addr varchar(255)) RETURNS BOOLEAN
 AS
 $$
@@ -80,7 +80,7 @@ BEGIN
 END; $$ LANGUAGE plpgsql;
 
 
-
+-- Достается название крипты из кошелька
 CREATE OR REPLACE FUNCTION get_crypto(addr varchar(255)) RETURNS varchar(255)
 AS
 $$
@@ -97,24 +97,24 @@ BEGIN
 
 END; $$ LANGUAGE plpgsql;
 
-
+-- Достается логин клиента при помощи кошелька
 CREATE OR REPLACE FUNCTION get_client(addr varchar(255)) RETURNS varchar(255)
 AS
 $$
 DECLARE
-    crypto_name varchar := 0;
+    login varchar := 0;
 BEGIN
-    crypto_name = (
+    login = (
         SELECT client
         FROM wallet
         WHERE wallet.address = addr
     );
 
-    RETURN crypto_name;
+    RETURN login;
 
 END; $$ LANGUAGE plpgsql;
 
-
+-- Достается обменный курс криптовалюты
 CREATE OR REPLACE FUNCTION get_exchange_rate(addr varchar(255)) RETURNS real
 AS
 $$
@@ -135,8 +135,8 @@ BEGIN
 
 END; $$ LANGUAGE plpgsql;
 
-
-CREATE OR REPLACE FUNCTION check_balance_before_transaction() RETURNS TRIGGER
+-- Производится транзакция между двумя криптовалютными кошельками (также проверяется баланс на крипто-кошельке)
+CREATE OR REPLACE FUNCTION make_transaction() RETURNS TRIGGER
 AS
 $$
 DECLARE
@@ -215,31 +215,6 @@ BEGIN
     end if;
 
 END; $$ LANGUAGE plpgsql;
-
-
-
--- _______________________________
-
--- TODO Когда выйдет срок действия банковской карты - удаляем эти данные из таблицы. Если текущая дата больше даты на карте,
--- TODO то удаляем запись о карте.
-
-
--- Проверяет статус новой добалвяемой p2p-транзакции. Он становится waiting в любом случае при добавлении.
-create or replace function check_p2p_status() returns trigger
-as
-$$
-declare
-    status p2p_transaction_status := new.status;
-begin
-    IF (status != 'waiting')
-    then
---                 RAISE EXCEPTION 'Статус новой p2p-транзакции должен быть waiting'
-        new.status = 'waiting';
-    end if;
-    return new;
-end;
-$$ language plpgsql;
-
 
 
 -- При изменении статуса с waiting: если approved - то деньги переводятся, если rejected - ничего не происходит.

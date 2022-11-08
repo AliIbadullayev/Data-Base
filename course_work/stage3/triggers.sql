@@ -6,11 +6,11 @@ CREATE TRIGGER form_nft_price
 EXECUTE FUNCTION change_nft_price();
 
 -- function that checks before making transaction the value amount on wallet
-CREATE TRIGGER check_amount_before_transaction
+CREATE TRIGGER make_transaction
     BEFORE INSERT
     ON transaction
     for each row
-EXECUTE FUNCTION check_balance_before_transaction();
+EXECUTE FUNCTION make_transaction();
 
 -- function that exchange your moneys for same client
 CREATE TRIGGER exchange
