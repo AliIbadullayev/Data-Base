@@ -112,3 +112,10 @@ create table p2p_transaction
     time           TIMESTAMP              not null,
     unique (wallet1, wallet2, time)
 );
+
+create table fiat_to_crypto
+(
+    id bigserial primary key,
+    wallet varchar(255) not null references wallet(address),
+    amount real not null
+);

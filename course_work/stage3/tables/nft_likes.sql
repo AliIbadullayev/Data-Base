@@ -997,3 +997,4 @@ INSERT INTO nft_likes(client,nft_entity_id,liked) VALUES ('ubromageij',902,'true
 INSERT INTO nft_likes(client,nft_entity_id,liked) VALUES ('acalloway44',658,'false');
 INSERT INTO nft_likes(client,nft_entity_id,liked) VALUES ('jstanggjertsenld',716,'false');
 INSERT INTO nft_likes(client,nft_entity_id,liked) VALUES ('sdennidgeqp',89,'true');
+

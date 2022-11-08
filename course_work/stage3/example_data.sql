@@ -94,3 +94,6 @@ VALUES
 
 UPDATE p2p_transaction SET status = 'approved' where p2p_transaction.id = 30;
 update client set fiat_balance  = fiat_balance + 10000 where user_login ='susaasus1';
+
+insert into fiat_to_crypto (wallet, amount) VALUES
+    ('1HjDaDxqzXcvEt1RQ3UxrZc1sELYjqTt1d', 30);

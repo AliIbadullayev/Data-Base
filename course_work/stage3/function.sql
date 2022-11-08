@@ -319,19 +319,90 @@ begin
 end;
 $$ language plpgsql;
 
--- Перед пополнением проверяем время истекания карты, если истекла - удаляем
+-- Buying a crypto from a fiat account
+create or replace function buy_crypto_from_fiat() returns trigger
+as
+$$
+begin
+    if (check_balance_fiat( get_exchange_rate(new.wallet) * new.amount, new.wallet)) is true then
+        update wallet set amount = get_wallet_balance(new.wallet) + new.amount
+        where wallet.address = new.wallet;
+        update client set fiat_balance = get_fiat_balance(new.wallet) - get_exchange_rate(new.wallet) * new.amount
+        where client.user_login = get_client(new.wallet);
+        return new;
+    end if;
+    RAISE EXCEPTION 'Пользователь не может пополнить криптовалютный кошелек, так как не достаточен баланс на лицевом счете! Баланс: %', get_fiat_balance(new.wallet);
+    end;
+$$ language plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_bank_card(user_login varchar(255)) RETURNS varchar(255)
+AS
+$$
+DECLARE
+    card_num varchar := 0;
+BEGIN
+    card_num = (
+        SELECT card_number
+        FROM bank_card
+        WHERE bank_card.client = user_login
+          AND bank_card.expire_date = (select min(expire_date) from bank_card where bank_card.client = user_login));
+
+    RETURN card_num;
+
+END; $$ LANGUAGE plpgsql;
+
+
 create or replace function delete_bank_card() returns trigger
 as
 $$
 declare
-    expire_date date := (select expire_date from bank_card where bank_card.client = new.user_login);
-    card varchar := (select card_number from bank_card where bank_card.client = new.user_login);
+    card_num varchar = get_bank_card(new.user_login);
+    exp_date date := (select expire_date from bank_card where bank_card.card_number = card_num);
 begin
-    IF (expire_date < current_date)
+    IF (exp_date < current_date)
     then
-        DELETE FROM bank_card where bank_card.card_number = card;
-        RAISE EXCEPTION 'Срок действия карты % истёк. Она удалена из ваших карт', card;
+        DELETE FROM bank_card where bank_card.card_number = card_num AND
+                bank_card.expire_date = exp_date;
+        RAISE NOTICE 'Срок действия карты % истёк. Она удалена из ваших карт',card_num;
     end if;
     return new;
 end;
 $$ language plpgsql;
+
+
+create or replace function return_stake() returns trigger
+as
+$$
+declare
+    exp_time timestamp := (select expire_date from stacking where stacking.wallet = new.address);
+    int_rate real := (select interest_rate from stacking where stacking.wallet = new.address);
+    am real := (select amount from stacking where stacking.wallet = new.address);
+begin
+    IF (exp_time < current_timestamp)
+    then
+
+        UPDATE wallet set amount = get_wallet_balance(new.address) + (am * (1+ (int_rate/100)))
+        where wallet.address = new.address;
+
+
+        DELETE FROM stacking where stacking.wallet = new.address;
+
+        RAISE NOTICE 'Стейкинг вернул вам деньги, кошелек % пополнен',new.address;
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+
+CREATE OR REPLACE FUNCTION place_nft() RETURNS TRIGGER
+AS
+$$
+DECLARE
+    placed_status boolean := (select placed from nft_entity where nft_entity.id = new.nft_entity_id);
+BEGIN
+    if (not placed_status) then
+        update nft_entity set placed = not placed_status where nft_entity.id = new.nft_entity_id;
+    end if;
+    RETURN NEW;
+END; $$ LANGUAGE plpgsql;
