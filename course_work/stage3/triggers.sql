@@ -19,13 +19,14 @@ CREATE TRIGGER exchange
     for each row
 EXECUTE FUNCTION exchange_crypto();
 
-
+-- Производится p2p транзакция при изменении ее статуса
 CREATE TRIGGER make_p2p_transaction_after_status_change
     AFTER UPDATE OF status
           ON p2p_transaction
               FOR EACH ROW
 EXECUTE FUNCTION make_p2p_transaction();
 
+-- Производится p2p транзакция при добавлении сущности в эту таблицу
 CREATE TRIGGER make_p2p_transaction
     BEFORE INSERT
         ON p2p_transaction
