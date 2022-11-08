@@ -1,4 +1,4 @@
---
+-- Меняется стоимость NFT - сущности. Когда поставил лайк +10, иначе -10
 CREATE OR REPLACE FUNCTION change_nft_price() RETURNS TRIGGER
 AS
 $$
@@ -346,7 +346,7 @@ begin
 end;
 $$ language plpgsql;
 
--- Возвращается сумма
+-- Возвращается сумма вклада на крипто-кошелек по истечению срока вклада
 create or replace function return_stake() returns trigger
 as
 $$
@@ -370,7 +370,7 @@ begin
 end;
 $$ language plpgsql;
 
-
+-- Размещается NFT - сущность при добавлении лайка (меняется статус с неразмещенного на размещенный)
 CREATE OR REPLACE FUNCTION place_nft() RETURNS TRIGGER
 AS
 $$
