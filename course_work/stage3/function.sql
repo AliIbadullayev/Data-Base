@@ -1,3 +1,4 @@
+--
 CREATE OR REPLACE FUNCTION change_nft_price() RETURNS TRIGGER
 AS
 $$
@@ -310,7 +311,7 @@ begin
     end;
 $$ language plpgsql;
 
-
+-- Достается банковская карта по логину пользователя
 CREATE OR REPLACE FUNCTION get_bank_card(user_login varchar(255)) RETURNS varchar(255)
 AS
 $$
@@ -327,7 +328,7 @@ BEGIN
 
 END; $$ LANGUAGE plpgsql;
 
-
+-- Удаляется карта по истечению ее срока действия
 create or replace function delete_bank_card() returns trigger
 as
 $$
@@ -345,7 +346,7 @@ begin
 end;
 $$ language plpgsql;
 
-
+-- Возвращается сумма
 create or replace function return_stake() returns trigger
 as
 $$
