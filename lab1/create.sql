@@ -16,7 +16,8 @@ create table groups(
 create table persons_groups(
                         person_id bigint not null references persons(id) on delete cascade,
                         group_id bigint not null references groups(id) on delete cascade,
-                        primary key (person_id, group_id)
+                        primary key (person_id, group_id),
+                        joined timestamp
 );
 
 create table emotions(
