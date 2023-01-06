@@ -42,7 +42,7 @@ $$
 --                     here check that the time of last joined group that lower than one week
                     if (
                         select ((current_timestamp -
-                                 (select MAX(joined) from persons_groups where person_id = 2 )
+                                 (select MAX(joined) from persons_groups where person_id = curr_id )
                                 ) < interval '7 days') as joined_not_before_one_week
                         ) is true then
 --                         here check that person has 4 emotions the length of which is 6 char
