@@ -53,7 +53,7 @@ select peoples.ИМЯ, count(*) as people_count from Н_ЛЮДИ peoples
             inner join "Н_ПЛАНЫ"  plans on plans.ИД = studs.ПЛАН_ИД
             inner join "Н_ОТДЕЛЫ"  faculties on faculties.ИД = plans.ОТД_ИД
                 group by peoples_for_count.ИМЯ, faculties.КОРОТКОЕ_ИМЯ
-                having count(*) > 10 and faculties.КОРОТКОЕ_ИМЯ = 'КТиУ' 
+                having count(*) > 10 and faculties.КОРОТКОЕ_ИМЯ = 'ВТ' 
                 	and peoples_for_count.ИМЯ <> '.' and peoples_for_count.ИМЯ <> ' '
     )
 group by peoples.ИМЯ;
@@ -102,11 +102,12 @@ select studs.ГРУППА, peoples.ИД, peoples.ФАМИЛИЯ, peoples.ИМЯ,
     inner join "Н_ЛЮДИ" peoples on peoples.ИД = studs.ЧЛВК_ИД
     where studs.ПРИЗНАК = 'отчисл'
       and studs.КОНЕЦ > '2012-09-01 00:00:00.000000'
+      and studs.СОСТОЯНИЕ = 'утвержден'
       and studs.ВИД_ОБУЧ_ИД in (select ИД from Н_ФОРМЫ_ОБУЧЕНИЯ where Н_ФОРМЫ_ОБУЧЕНИЯ.НАИМЕНОВАНИЕ = 'Заочная');
 
 
 -- Вывести список студентов, имеющих одинаковые фамилии, но не совпадающие даты рождения.
-
+-- 22634/23311
 select *
     from Н_УЧЕНИКИ studs
         inner join "Н_ЛЮДИ" peoples on peoples.ИД = studs.ЧЛВК_ИД
@@ -114,3 +115,4 @@ select *
         select ДАТА_РОЖДЕНИЯ from Н_ЛЮДИ
         where Н_ЛЮДИ.ФАМИЛИЯ = peoples.ФАМИЛИЯ and studs.ЧЛВК_ИД <> Н_ЛЮДИ.ИД
     );
+
